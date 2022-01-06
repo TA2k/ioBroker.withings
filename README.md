@@ -25,6 +25,8 @@ Eine App registrieren
 
 Name: ioBroker
 
+Beliebiges Bild hochladen
+
 Description: ioBroker
 
 Email: Yourmail
