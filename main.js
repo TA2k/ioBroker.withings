@@ -151,6 +151,7 @@ class Withings extends utils.Adapter {
             })
             .catch((error) => {
                 if (error.response && error.response.status === 302) {
+                    this.log.debug(JSON.stringify(error.response.headers));
                     return error.response.headers.location.split("code=")[1].split("&")[0];
                 }
 
