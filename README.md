@@ -17,8 +17,26 @@ Adapter for Withings
 
 ## Loginablauf
 
-Die Mail und Passwort eingeben. Client ID und Secret erstelle und eingeben. 
+Die Withings Email und Passwort eingeben
 
+https://account.withings.com/partner/dashboard_oauth2
+
+Eine App registrieren
+
+Name: ioBroker
+
+Description: ioBroker
+
+Email: Yourmail
+
+Company: ioBroker
+
+Callback URI: http://localhost
+
+Eingeschränkter Modus: Ja
+
+
+Client id und Client Secret eintragen
 
 ## Diskussion und Fragen
 
