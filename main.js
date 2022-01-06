@@ -115,9 +115,34 @@ class Withings extends utils.Adapter {
             withCredentials: true,
             data: qs.stringify(form),
         })
-            .then((res) => {
+            .then(async (res) => {
                 this.log.debug(JSON.stringify(res.data));
-                return res;
+                if (res.data.indexOf("user_selection") !== -1) {
+                    const url = res.data.split("response_type=code")[1].split('"')[0];
+                    return await this.requestClient({
+                        method: "get",
+                        url: "https://account.withings.com/oauth2_user/account_login?response_type=code" + url,
+                        headers: {
+                            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                            "Accept-Language": "de",
+                        },
+                        jar: this.cookieJar,
+                        withCredentials: true,
+                    })
+                        .then((res) => {
+                            this.log.debug(JSON.stringify(res.data));
+                            this.log.debug(res.request.path);
+                            return res.data;
+                        })
+                        .catch((error) => {
+                            this.log.error(error);
+                            if (error.response) {
+                                this.log.error(JSON.stringify(error.response.data));
+                            }
+                        });
+                } else {
+                    return res;
+                }
             })
             .catch((error) => {
                 if (error.response && error.response.status === 302) {
@@ -268,6 +293,8 @@ class Withings extends utils.Adapter {
                     startdate: Math.round(Date.now() / 1000) - 2592000, //30 days
                     enddate: Math.round(Date.now() / 1000),
                 },
+                forceIndex: false,
+                preferedArrayName: "type",
             },
             {
                 path: "activity",
@@ -279,6 +306,7 @@ class Withings extends utils.Adapter {
                     startdateymd: startDateFormattedday, //30 days
                     enddateymd: date,
                 },
+                forceIndex: true,
             },
             {
                 path: "heartList",
@@ -289,6 +317,7 @@ class Withings extends utils.Adapter {
                     startdate: Math.round(Date.now() / 1000) - 2592000, //30 days
                     enddate: Math.round(Date.now() / 1000),
                 },
+                forceIndex: true,
             },
             {
                 path: "sleepSummary",
@@ -299,6 +328,7 @@ class Withings extends utils.Adapter {
                     startdateymd: startDateFormattedday, //30 days
                     enddateymd: date,
                 },
+                forceIndex: true,
             },
         ];
 
@@ -343,7 +373,7 @@ class Withings extends utils.Adapter {
                         138: "Corrected QT interval duration based on ECG signal",
                         139: "Atrial fibrillation result from PPG",
                     };
-                    this.json2iob.parse(element.path, data, { forceIndex: false, preferedArrayName: "type", channelName: element.desc, descriptions: descriptions });
+                    this.json2iob.parse(element.path, data, { forceIndex: element.forceIndex, preferedArrayName: element.preferedArrayName, channelName: element.desc, descriptions: descriptions });
                 })
                 .catch((error) => {
                     if (error.response) {
