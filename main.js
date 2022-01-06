@@ -78,7 +78,7 @@ class Withings extends utils.Adapter {
             url:
                 "https://account.withings.com/oauth2_user/authorize2?response_type=code&client_id=" +
                 this.config.clientid +
-                "&state=h4fhjnc2daoc3m&scope=user.activity,user.metrics&redirect_uri=http://localhost",
+                "&state=h4fhjnc2daoc3m&scope=user.activity,user.metrics,user.info&redirect_uri=http://localhost",
             headers: {
                 Accept: "*/*",
                 "User-Agent": this.userAgent,
@@ -105,7 +105,7 @@ class Withings extends utils.Adapter {
             url:
                 "https://account.withings.com/oauth2_user/account_login?response_type=code&client_id=" +
                 this.config.clientid +
-                "&state=h4fhjnc2daoc3m&scope=user.activity,user.metrics&redirect_uri=http://localhost&b=authorize2",
+                "&state=h4fhjnc2daoc3m&scope=user.activity,user.metrics,user.info&redirect_uri=http://localhost&b=authorize2",
             headers: {
                 Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
                 "Accept-Language": "de",
@@ -133,7 +133,7 @@ class Withings extends utils.Adapter {
         form.authorized = "1";
         const code = await this.requestClient({
             method: "post",
-            url: "https://account.withings.com/" + result.request.path,
+            url: "https://account.withings.com" + result.request.path,
             headers: {
                 Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
                 "Accept-Language": "de",
@@ -178,7 +178,11 @@ class Withings extends utils.Adapter {
         })
             .then((res) => {
                 this.log.debug(JSON.stringify(res.data));
-                this.session = res.data;
+                if (res.data.error) {
+                    this.log.error(res.data);
+                    return;
+                }
+                this.session = res.data.body;
                 this.setState("info.connection", true, true);
             })
             .catch((error) => {
@@ -199,7 +203,9 @@ class Withings extends utils.Adapter {
         })
             .then(async (res) => {
                 this.log.debug(JSON.stringify(res.data));
-
+                if (!res.data.body.devices) {
+                    return;
+                }
                 for (const device of res.data.body.devices) {
                     const id = device.deviceid;
                     if (this.deviceArray.indexOf(id) === -1) {
@@ -312,11 +318,32 @@ class Withings extends utils.Adapter {
                     if (!res.data) {
                         return;
                     }
-                    const data = res.data;
-
-                    const preferedArrayName = null;
-
-                    this.json2iob.parse(element.path, data, { forceIndex: true, preferedArrayName: preferedArrayName, channelName: element.desc });
+                    const data = res.data.body;
+                    const descriptions = {
+                        1: "Weight (kg)",
+                        4: "Height (meter)",
+                        5: "Fat Free Mass (kg)",
+                        6: "Fat Ratio (%)",
+                        8: "Fat Mass Weight (kg)",
+                        9: "Diastolic Blood Pressure (mmHg)",
+                        10: "Systolic Blood Pressure (mmHg)",
+                        11: "Heart Pulse (bpm) - only for BPM and scale devices",
+                        12: "Temperature (celsius)",
+                        54: "SP02 (%)",
+                        71: "Body Temperature (celsius)",
+                        73: "Skin Temperature (celsius)",
+                        76: "Muscle Mass (kg)",
+                        77: "Hydration (kg)",
+                        88: "Bone Mass (kg)",
+                        91: "Pulse Wave Velocity (m/s)",
+                        123: "VO2 max is a numerical measurement of your body’s ability to consume oxygen (ml/min/kg).",
+                        135: "QRS interval duration based on ECG signal",
+                        136: "PR interval duration based on ECG signal",
+                        137: "QT interval duration based on ECG signal",
+                        138: "Corrected QT interval duration based on ECG signal",
+                        139: "Atrial fibrillation result from PPG",
+                    };
+                    this.json2iob.parse(element.path, data, { forceIndex: false, preferedArrayName: "type", channelName: element.desc, descriptions: descriptions });
                 })
                 .catch((error) => {
                     if (error.response) {
@@ -359,7 +386,7 @@ class Withings extends utils.Adapter {
         })
             .then((res) => {
                 this.log.debug(JSON.stringify(res.data));
-                this.session = res.data;
+                this.session = res.data.body;
                 this.setState("info.connection", true, true);
             })
             .catch((error) => {
