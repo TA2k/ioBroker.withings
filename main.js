@@ -177,6 +177,11 @@ class Withings extends utils.Adapter {
             .catch((error) => {
                 if (error.response && error.response.status === 302) {
                     this.log.debug(JSON.stringify(error.response.headers));
+                    if (error.response.headers.location === -1) {
+                        this.log.debug(JSON.stringify(error.response.headers));
+                        this.log.error("No code found");
+                        return null;
+                    }
                     return error.response.headers.location.split("code=")[1].split("&")[0];
                 }
 
