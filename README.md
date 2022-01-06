@@ -22,7 +22,7 @@ Die Mail und Passwort eingeben. Client ID und Secret erstelle und eingeben.
 
 ## Diskussion und Fragen
 
-<https://forum.iobroker.net/topic/>
+<https://forum.iobroker.net/topic/51104/test-withings-v0-0-x>
 
 
 ## Changelog
