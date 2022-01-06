@@ -335,6 +335,17 @@ class Withings extends utils.Adapter {
                 },
                 forceIndex: true,
             },
+            {
+                path: "sleep",
+                url: "https://wbsapi.withings.net/v2/sleep",
+                desc: "Sleep measures for the night ",
+                data: {
+                    action: "get",
+                    startdate: Math.round(Date.now() / 1000) - 86400, //1 day
+                    enddate: Math.round(Date.now() / 1000),
+                },
+                forceIndex: true,
+            },
         ];
 
         const headers = {
