@@ -132,7 +132,7 @@ class Withings extends utils.Adapter {
                         .then((res) => {
                             this.log.debug(JSON.stringify(res.data));
                             this.log.debug(res.request.path);
-                            return res.data;
+                            return res;
                         })
                         .catch((error) => {
                             this.log.error(error);
