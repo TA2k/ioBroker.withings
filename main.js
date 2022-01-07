@@ -293,7 +293,7 @@ class Withings extends utils.Adapter {
                 desc: "Measurements",
                 data: {
                     action: "getmeas",
-                    // meastypes: "1,4,5,6,8,9,10,11,12,54,71,73,76,77,88,91,123,135,136,137,138,139",
+                    meastypes: "1,4,5,6,8,9,10,11,12,54,71,73,76,77,88,91,123,135,136,137,138,139",
                     // category: "category",
                     startdate: Math.round(Date.now() / 1000) - 2592000, //30 days
                     enddate: Math.round(Date.now() / 1000),
@@ -332,6 +332,8 @@ class Withings extends utils.Adapter {
                     action: "getsummary",
                     startdateymd: startDateFormattedday, //30 days
                     enddateymd: date,
+                    data_fields:
+                        "breathing_disturbances_intensity,deepsleepduration,durationtosleep,durationtowakeup,hr_average,hr_max,hr_min,lightsleepduration,remsleepduration,rr_average,rr_max,rr_min,sleep_score,snoring,snoringepisodecount,wakeupcount,wakeupduration,nb_rem_episodes,sleep_efficiency,sleep_latency,total_sleep_time,total_timeinbed,wakeup_latency,waso,apnea_hypopnea_index,asleepduration",
                 },
                 forceIndex: true,
             },
@@ -343,6 +345,7 @@ class Withings extends utils.Adapter {
                     action: "get",
                     startdate: Math.round(Date.now() / 1000) - 86400, //1 day
                     enddate: Math.round(Date.now() / 1000),
+                    data_fields: "hr,rr,snoring",
                 },
                 forceIndex: true,
             },
