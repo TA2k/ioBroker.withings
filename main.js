@@ -39,6 +39,9 @@ class Withings extends utils.Adapter {
             this.log.info("Set interval to minimum 0.5");
             this.config.interval = 0.5;
         }
+        if (this.config.lastDays < 1) {
+            this.config.lastDays = 1;
+        }
         if (!this.config.username || !this.config.password || !this.config.clientid || !this.config.clientsecret) {
             this.log.error("Please set username and password in the instance settings");
             return;
@@ -283,8 +286,9 @@ class Withings extends utils.Adapter {
 
     async updateDevices() {
         const date = new Date().toISOString().split("T")[0];
-        const startTimestampday = new Date().setDate(new Date().getDate() - 30);
+        const startTimestampday = new Date().setDate(new Date().getDate() - this.config.lastDays);
         const startDateFormattedday = new Date(startTimestampday).toISOString().split("T")[0];
+        const limitSeconds = this.config.lastDays * 24 * 60 * 60;
 
         const statusArray = [
             {
@@ -294,8 +298,8 @@ class Withings extends utils.Adapter {
                 data: {
                     action: "getmeas",
                     meastypes: "1,4,5,6,8,9,10,11,12,54,71,73,76,77,88,91,123,135,136,137,138,139",
-                    // category: "category",
-                    startdate: Math.round(Date.now() / 1000) - 2592000, //30 days
+
+                    startdate: Math.round(Date.now() / 1000) - limitSeconds,
                     enddate: Math.round(Date.now() / 1000),
                 },
                 forceIndex: false,
@@ -308,7 +312,7 @@ class Withings extends utils.Adapter {
                 data: {
                     action: "getactivity",
 
-                    startdateymd: startDateFormattedday, //30 days
+                    startdateymd: startDateFormattedday,
                     enddateymd: date,
                 },
                 forceIndex: true,
@@ -319,7 +323,7 @@ class Withings extends utils.Adapter {
                 desc: "List of ECG recordings",
                 data: {
                     action: "list",
-                    startdate: Math.round(Date.now() / 1000) - 2592000, //30 days
+                    startdate: Math.round(Date.now() / 1000) - limitSeconds,
                     enddate: Math.round(Date.now() / 1000),
                 },
                 forceIndex: true,
@@ -330,7 +334,7 @@ class Withings extends utils.Adapter {
                 desc: "Basic information about a night",
                 data: {
                     action: "getsummary",
-                    startdateymd: startDateFormattedday, //30 days
+                    startdateymd: startDateFormattedday,
                     enddateymd: date,
                     data_fields:
                         "breathing_disturbances_intensity,deepsleepduration,durationtosleep,durationtowakeup,hr_average,hr_max,hr_min,lightsleepduration,remsleepduration,rr_average,rr_max,rr_min,sleep_score,snoring,snoringepisodecount,wakeupcount,wakeupduration,nb_rem_episodes,sleep_efficiency,sleep_latency,total_sleep_time,total_timeinbed,wakeup_latency,waso,apnea_hypopnea_index,asleepduration",
@@ -368,6 +372,9 @@ class Withings extends utils.Adapter {
                         return;
                     }
                     const data = res.data.body;
+                    if (data.activities) {
+                        data.activities.sort((a, b) => a.date.localeCompare(b.date));
+                    }
                     const descriptions = {
                         1: "Weight (kg)",
                         4: "Height (meter)",

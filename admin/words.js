@@ -86,4 +86,16 @@ systemDictionary = {
         pl: "Tryb ograniczonego dostępu: tak",
         "zh-cn": "受限模式：是",
     },
+    "Fetch last x days": {
+        en: "Fetch last x days",
+        de: "Letzte x Tage abrufen",
+        ru: "Получить за последние x дней",
+        pt: "Buscar últimos x dias",
+        nl: "Laatste x dagen ophalen",
+        fr: "Récupérer les x derniers jours",
+        it: "Recupera gli ultimi x giorni",
+        es: "Obtener los últimos x días",
+        pl: "Pobierz ostatnie x dni",
+        "zh-cn": "获取最近 x 天",
+    },
 };

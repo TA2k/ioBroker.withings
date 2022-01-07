@@ -88,7 +88,8 @@
         "password": "",
         "clientid": "",
         "clientsecret": "",
-        "interval": 10
+        "interval": 10,
+        "lastDays": 30
     },
     "objects": [],
     "instanceObjects": [
