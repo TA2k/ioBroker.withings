@@ -39,7 +39,7 @@ class Withings extends utils.Adapter {
             this.log.info("Set interval to minimum 0.5");
             this.config.interval = 0.5;
         }
-        if (this.config.lastDays < 1) {
+        if (!this.config.lastDays || this.config.lastDays < 1) {
             this.config.lastDays = 1;
         }
         if (!this.config.username || !this.config.password || !this.config.clientid || !this.config.clientsecret) {
@@ -121,7 +121,10 @@ class Withings extends utils.Adapter {
             .then(async (res) => {
                 this.log.debug(JSON.stringify(res.data));
                 if (res.data.indexOf("user_selection") !== -1) {
-                    const url = res.data.split("response_type=code")[1].split('"')[0];
+                    const url = res.data
+                        .split("response_type=code")[1]
+                        .split('"')[0]
+                        .replace(/\&amp;/g, "&");
                     return await this.requestClient({
                         method: "get",
                         url: "https://account.withings.com/oauth2_user/account_login?response_type=code" + url,
@@ -180,7 +183,7 @@ class Withings extends utils.Adapter {
             .catch((error) => {
                 if (error.response && error.response.status === 302) {
                     this.log.debug(JSON.stringify(error.response.headers));
-                    if (error.response.headers.location === -1) {
+                    if (error.response.headers.location.indexOf("code=") === -1) {
                         this.log.debug(JSON.stringify(error.response.headers));
                         this.log.error("No code found");
                         return null;
