@@ -120,6 +120,10 @@ class Withings extends utils.Adapter {
         })
             .then(async (res) => {
                 this.log.debug(JSON.stringify(res.data));
+                if (res.data.errors) {
+                    this.log.error(JSON.stringify(res.data));
+                    return;
+                }
                 if (res.data.indexOf("user_selection") !== -1) {
                     const url = res.data
                         .split("response_type=code")[1]
@@ -159,7 +163,9 @@ class Withings extends utils.Adapter {
                     this.log.error(JSON.stringify(error.response.data));
                 }
             });
-
+        if (!result) {
+            return;
+        }
         form = this.extractHidden(result.data);
         form.authorized = "1";
         const code = await this.requestClient({
@@ -178,7 +184,12 @@ class Withings extends utils.Adapter {
             .then((res) => {
                 this.log.debug(JSON.stringify(res.data));
                 this.log.debug(res.request.path);
-                return res.headers.location.split("code=")[1];
+                this.log.debug(res.headers.location);
+                if (res.headers.location) {
+                    return res.headers.location.split("code=")[1];
+                }
+                this.log.warn("Please check username and password");
+                return;
             })
             .catch((error) => {
                 if (error.response && error.response.status === 302) {
@@ -215,7 +226,7 @@ class Withings extends utils.Adapter {
             .then((res) => {
                 this.log.debug(JSON.stringify(res.data));
                 if (res.data.error) {
-                    this.log.error(res.data);
+                    this.log.error(JSON.stringify(res.data));
                     return;
                 }
                 this.session = res.data.body;
