@@ -174,6 +174,7 @@ class Withings extends utils.Adapter {
                                 if (error.response) {
                                     this.log.error(JSON.stringify(error.response.data));
                                 }
+                                return;
                             });
                     }
                     return responseArray;
@@ -183,12 +184,13 @@ class Withings extends utils.Adapter {
             })
             .catch((error) => {
                 if (error.response && error.response.status === 302) {
-                    return;
+                    return [];
                 }
                 this.log.error(error);
                 if (error.response) {
                     this.log.error(JSON.stringify(error.response.data));
                 }
+                return [];
             });
 
         for (const result of resultArray) {
