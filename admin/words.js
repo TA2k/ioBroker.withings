@@ -98,4 +98,16 @@ systemDictionary = {
         pl: "Pobierz ostatnie x dni",
         "zh-cn": "获取最近 x 天",
     },
+    "Fetch last x hours for sleep": {
+        en: "Fetch last x hours for sleep",
+        de: "Letzte x Stunden zum Schlafen abrufen",
+        ru: "Получить последние x часов для сна",
+        pt: "Buscar últimas x horas para dormir",
+        nl: "Laatste x uur halen om te slapen",
+        fr: "Récupérer les x dernières heures pour dormir",
+        it: "Recupera le ultime x ore per dormire",
+        es: "Obtener las últimas x horas para dormir",
+        pl: "Pobierz ostatnie x godzin snu",
+        "zh-cn": "获取最后 x 小时的睡眠时间",
+    },
 };
