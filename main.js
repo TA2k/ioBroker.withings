@@ -557,6 +557,17 @@ class Withings extends utils.Adapter {
         }
         return returnObject;
     }
+    matchAll(re, str) {
+        let match;
+        const matches = [];
+
+        while ((match = re.exec(str))) {
+            // add all matched groups
+            matches.push(match);
+        }
+
+        return matches;
+    }
     /**
      * Is called when adapter shuts down - callback has to be called under any circumstances!
      * @param {() => void} callback
