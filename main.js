@@ -368,7 +368,7 @@ class Withings extends utils.Adapter {
                     desc: "Activity",
                     data: {
                         action: "getactivity",
-
+                        data_fields: "steps,distance,elevation,soft,moderate,intense,active,calories,totalcalories,hr_average,hr_min,hr_max,hr_zone_0,hr_zone_1,hr_zone_2,hr_zone_3",
                         startdateymd: startDateFormattedday,
                         enddateymd: date,
                     },
