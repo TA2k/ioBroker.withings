@@ -1,8 +1,12 @@
 {
     "common": {
         "name": "withings",
-        "version": "0.0.3",
+        "version": "0.0.4",
         "news": {
+            "0.0.4": {
+                "en": "Add additional fields for activity",
+                "de": "Zusätzliche Felder für Activity hinzugefügt"
+            },
             "0.0.3": {
                 "en": "initial release",
                 "de": "Erstveröffentlichung",
