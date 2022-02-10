@@ -63,7 +63,7 @@ class Withings extends utils.Adapter {
         this.reLoginTimeout = null;
         this.refreshTokenTimeout = null;
         this.session = [];
-        await this.cleanOldVersion();
+        // await this.cleanOldVersion();
         this.subscribeStates("*");
 
         await this.login();
@@ -432,7 +432,7 @@ class Withings extends utils.Adapter {
                             data.activities.sort((a, b) => a.date.localeCompare(b.date));
                         }
                         if (data.measuregrps) {
-                            data.measuregrps.sort((a, b) => a.date.localeCompare(b.date));
+                            data.measuregrps.sort((a, b) => a.date - b.date);
                         }
                         const descriptions = {
                             1: "Weight (kg)",
