@@ -431,9 +431,9 @@ class Withings extends utils.Adapter {
                         if (data.activities) {
                             data.activities.sort((a, b) => a.date.localeCompare(b.date));
                         }
-                        if (data.measuregrps) {
-                            data.measuregrps.sort((a, b) => a.date - b.date);
-                        }
+                        // if (data.measuregrps) {
+                        //     data.measuregrps.sort((a, b) => a.date - b.date);
+                        // }
                         const descriptions = {
                             1: "Weight (kg)",
                             4: "Height (meter)",
