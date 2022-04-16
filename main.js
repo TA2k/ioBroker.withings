@@ -80,7 +80,7 @@ class Withings extends utils.Adapter {
         }
     }
     async login() {
-        const loginHtml = await this.requestClient({
+        let loginHtml = await this.requestClient({
             method: "get",
             url:
                 "https://account.withings.com/oauth2_user/authorize2?response_type=code&client_id=" +
@@ -106,14 +106,41 @@ class Withings extends utils.Adapter {
             });
         let form = this.extractHidden(loginHtml);
         form.email = this.config.username;
+        loginHtml = await this.requestClient({
+            method: "post",
+            url:
+                "https://account.withings.com/new_workflow/login?r=https://account.withings.com/oauth2_user/account_login?response_type=code&client_id=" +
+                this.config.clientid +
+                "&state=h4fhjnc2daoc3m&scope=user.activity%2Cuser.metrics%2Cuser.info&redirect_uri=http%3A%2F%2Flocalhost&b=authorize2",
+            headers: {
+                Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+                "Accept-Language": "de",
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            jar: this.cookieJar,
+            withCredentials: true,
+            data: qs.stringify(form),
+        })
+            .then(async (res) => {
+                return res.data;
+            })
+            .catch((error) => {
+                this.log.error(error);
+                if (error.response) {
+                    this.log.error(JSON.stringify(error.response.data));
+                }
+                return;
+            });
+
+        form = this.extractHidden(loginHtml);
         form.password = this.config.password;
 
         const resultArray = await this.requestClient({
             method: "post",
             url:
-                "https://account.withings.com/oauth2_user/account_login?response_type=code&client_id=" +
+                "https://account.withings.com/new_workflow/password_check?r=https%3A%2F%2Faccount.withings.com%2Foauth2_user%2Faccount_login%3Fresponse_type%3Dcode%26client_id%3D" +
                 this.config.clientid +
-                "&state=h4fhjnc2daoc3m&scope=user.activity,user.metrics,user.info&redirect_uri=http://localhost&b=authorize2",
+                "%26state%3Dh4fhjnc2daoc3m%26scope%3Duser.activity%252Cuser.metrics%252Cuser.info%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%26b%3Dauthorize2",
             headers: {
                 Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
                 "Accept-Language": "de",
