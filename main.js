@@ -458,6 +458,9 @@ class Withings extends utils.Adapter {
                         if (data.activities) {
                             data.activities.sort((a, b) => a.date.localeCompare(b.date));
                         }
+                        if (element.path === "sleepSummary") {
+                            data.series.sort((a, b) => b.created - a.created);
+                        }
                         // if (data.measuregrps) {
                         //     data.measuregrps.sort((a, b) => a.date - b.date);
                         // }
