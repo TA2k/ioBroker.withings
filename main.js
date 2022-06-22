@@ -461,6 +461,15 @@ class Withings extends utils.Adapter {
                         if (element.path === "sleepSummary" || element.path === "sleep") {
                             data.series.sort((a, b) => b.startdate - a.startdate);
                         }
+                        if (element.path === "sleep") {
+                            data.series.map((element) => {
+                                for (const key in element) {
+                                    if (typeof element[key] === "object") {
+                                        element[key] = Object.values(element[key])[0];
+                                    }
+                                }
+                            });
+                        }
                         // if (data.measuregrps) {
                         //     data.measuregrps.sort((a, b) => a.date - b.date);
                         // }
