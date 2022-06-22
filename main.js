@@ -467,10 +467,12 @@ class Withings extends utils.Adapter {
                             data.series.map((element) => {
                                 for (const key in element) {
                                     if (typeof element[key] === "object") {
-                                        const valuesNumbers = Object.values(element[key]).length;
-
-                                        this.log.info(`Found ${valuesNumbers} values for ${key} select last`);
-                                        element[key] = Object.values(element[key])[valuesNumbers - 1];
+                                        let newArray = [];
+                                        for (const timestamp in element[key]) {
+                                            newArray.push({ timestamp: timestamp, value: element[key][timestamp] });
+                                        }
+                                        newArray.sort((a, b) => b.timestamp - a.timestamp);
+                                        element[key] = newArray;
                                     }
                                 }
                             });
