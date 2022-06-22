@@ -458,18 +458,18 @@ class Withings extends utils.Adapter {
                         if (data.activities) {
                             data.activities.sort((a, b) => a.date.localeCompare(b.date));
                         }
-                        if (element.path === "sleepSummary" || element.path === "sleep") {
+                        if (element.path === "sleepSummary") {
                             data.series.sort((a, b) => b.startdate - a.startdate);
                         }
                         if (element.path === "sleep") {
-                            data.series.map((element) => {
-                                for (const key in element) {
-                                    if (typeof element[key] === "object") {
-                                        const valuesNumbers = Object.values(element[key]).length;
-                                        element[key] = Object.values(element[key])[valuesNumbers - 1];
-                                    }
+                            const element = data.series;
+                            for (const key in element) {
+                                if (typeof element[key] === "object") {
+                                    const valuesNumbers = Object.values(element[key]).length;
+                                    this.log.info(`Found ${valuesNumbers} values for ${key} select last`);
+                                    element[key] = Object.values(element[key])[valuesNumbers - 1];
                                 }
-                            });
+                            }
                         }
                         // if (data.measuregrps) {
                         //     data.measuregrps.sort((a, b) => a.date - b.date);
