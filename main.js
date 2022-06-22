@@ -465,7 +465,8 @@ class Withings extends utils.Adapter {
                             data.series.map((element) => {
                                 for (const key in element) {
                                     if (typeof element[key] === "object") {
-                                        element[key] = Object.values(element[key])[0];
+                                        const valuesNumbers = Object.values(element[key]).length;
+                                        element[key] = Object.values(element[key])[valuesNumbers - 1];
                                     }
                                 }
                             });
