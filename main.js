@@ -463,11 +463,11 @@ class Withings extends utils.Adapter {
                                 data.series.sort((a, b) => b.startdate - a.startdate);
                             }
                         }
-                        if (element.path === "sleep") {
+                        if (element.path === "sleep" && data.series) {
                             data.series.map((element) => {
                                 for (const key in element) {
                                     if (typeof element[key] === "object") {
-                                        let newArray = [];
+                                        const newArray = [];
                                         for (const timestamp in element[key]) {
                                             newArray.push({ timestamp: timestamp, value: element[key][timestamp] });
                                         }
