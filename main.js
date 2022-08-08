@@ -63,7 +63,7 @@ class Withings extends utils.Adapter {
     this.reLoginTimeout = null;
     this.refreshTokenTimeout = null;
     this.session = [];
-    // await this.cleanOldVersion();
+    await this.cleanOldVersion();
     this.subscribeStates("*");
 
     await this.login();
