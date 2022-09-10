@@ -1,9 +1,9 @@
 {
   "common": {
     "name": "withings",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "news": {
-      "0.0.11": {
+      "0.0.12": {
         "en": "Fix problem with a lot data points under sleep",
         "de": "Problem behoben mit zuvielen Datenpunkten unter sleep"
       },
