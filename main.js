@@ -594,11 +594,15 @@ class Withings extends utils.Adapter {
         native: {},
       });
 
-      this.log.info("Done with cleaning");
+      this.log.info("Done with cleaning, restart adapter");
+      this.restart();
     }
   }
   extractHidden(body) {
     const returnObject = {};
+    if (!body) {
+      this.log.warn("No body found");
+    }
     let matches;
     if (body.matchAll) {
       matches = body.matchAll(/<input (?=[^>]* name=["']([^'"]*)|)(?=[^>]* value=["']([^'"]*)|)/g);
