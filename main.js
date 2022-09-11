@@ -11,7 +11,7 @@ const axios = require("axios");
 const qs = require("qs");
 const Json2iob = require("./lib/json2iob");
 const tough = require("tough-cookie");
-const { HttpsCookieAgent } = require("http-cookie-agent");
+const { HttpsCookieAgent } = require("http-cookie-agent/http");
 
 class Withings extends utils.Adapter {
   /**
@@ -54,9 +54,7 @@ class Withings extends utils.Adapter {
     this.requestClient = axios.create({
       jar: this.cookieJar,
       withCredentials: true,
-      httpsAgent: new HttpsCookieAgent({
-        jar: this.cookieJar,
-      }),
+      httpsAgent: new HttpsCookieAgent({ cookies: { jar: this.cookieJar } }),
     });
 
     this.updateInterval = null;
