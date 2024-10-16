@@ -383,7 +383,7 @@ class Withings extends utils.Adapter {
           desc: "Measurements",
           data: {
             action: "getmeas",
-            meastypes: "1,4,5,6,8,9,10,11,12,54,71,73,76,77,88,91,123,135,136,137,138,139",
+            meastypes: "1,4,5,6,8,9,10,11,12,54,71,73,76,77,88,91,123,135,136,137,138,139,170",
 
             startdate: Math.round(Date.now() / 1000) - limitSeconds,
             enddate: Math.round(Date.now() / 1000),
@@ -506,6 +506,7 @@ class Withings extends utils.Adapter {
               137: "QT interval duration based on ECG signal",
               138: "Corrected QT interval duration based on ECG signal",
               139: "Atrial fibrillation result from PPG",
+              170: "Visceral Fat (without unity)"
             };
             this.json2iob.parse(userid + "." + element.path, data, {
               forceIndex: element.forceIndex,
