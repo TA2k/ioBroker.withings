@@ -1,8 +1,12 @@
 {
   "common": {
     "name": "withings",
-    "version": "0.0.13",
+    "version": "0.0.15",
     "news": {
+      "0.0.15": {
+        "en": "Update dependencies",
+        "de": "Abhängigkeiten aktualisiert"
+      },
       "0.0.13": {
         "en": "Fix login and problem with a lot data points under sleep",
         "de": "Problem behoben mit Login und zuvielen Datenpunkten unter sleep"
