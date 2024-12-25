@@ -424,7 +424,7 @@ class Withings extends utils.Adapter {
             startdateymd: startDateFormattedday,
             enddateymd: date,
             data_fields:
-              "breathing_disturbances_intensity,deepsleepduration,durationtosleep,durationtowakeup,hr_average,hr_max,hr_min,lightsleepduration,remsleepduration,rr_average,rr_max,rr_min,sleep_score,snoring,snoringepisodecount,wakeupcount,wakeupduration,nb_rem_episodes,sleep_efficiency,sleep_latency,total_sleep_time,total_timeinbed,wakeup_latency,waso,apnea_hypopnea_index,asleepduration",
+              "breathing_disturbances_intensity,deepsleepduration,durationtosleep,durationtowakeup,hr_average,hr_max,hr_min,lightsleepduration,remsleepduration,rr_average,rr_max,rr_min,sleep_score,snoring,snoringepisodecount,wakeupcount,wakeupduration,nb_rem_episodes,sleep_efficiency,sleep_latency,total_sleep_time,total_timeinbed,wakeup_latency,waso,apnea_hypopnea_index,asleepduration,night_events,out_of_bed_count",
           },
           forceIndex: true,
         },
@@ -506,7 +506,7 @@ class Withings extends utils.Adapter {
               137: "QT interval duration based on ECG signal",
               138: "Corrected QT interval duration based on ECG signal",
               139: "Atrial fibrillation result from PPG",
-              170: "Visceral Fat (without unity)"
+              170: "Visceral Fat (without unity)",
             };
             this.json2iob.parse(userid + "." + element.path, data, {
               forceIndex: element.forceIndex,
@@ -607,7 +607,7 @@ class Withings extends utils.Adapter {
       matches = body.matchAll(/<input (?=[^>]* name=["']([^'"]*)|)(?=[^>]* value=["']([^'"]*)|)/g);
     } else {
       this.log.warn(
-        "The adapter needs in the future NodeJS v12. https://forum.iobroker.net/topic/22867/how-to-node-js-f%C3%BCr-iobroker-richtig-updaten"
+        "The adapter needs in the future NodeJS v12. https://forum.iobroker.net/topic/22867/how-to-node-js-f%C3%BCr-iobroker-richtig-updaten",
       );
       matches = this.matchAll(/<input (?=[^>]* name=["']([^'"]*)|)(?=[^>]* value=["']([^'"]*)|)/g, body);
     }
