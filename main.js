@@ -160,6 +160,7 @@ class Withings extends utils.Adapter {
           let urlArray = res.data.split("response_type=code");
           urlArray.shift();
           urlArray = urlArray.map((url) => {
+            //eslint-disable-next-line no-useless-escape
             return url.split('"')[0].replace(/\&amp;/g, "&");
           });
           let nameArray = res.data.split("selecteduser=");
@@ -640,6 +641,7 @@ class Withings extends utils.Adapter {
       this.refreshTokenInterval && clearInterval(this.refreshTokenInterval);
       callback();
     } catch (e) {
+      this.log.error(e);
       callback();
     }
   }
@@ -652,7 +654,7 @@ class Withings extends utils.Adapter {
   async onStateChange(id, state) {
     if (state) {
       if (!state.ack) {
-        const deviceId = id.split(".")[2];
+        // const deviceId = id.split(".")[2];
         const command = id.split(".")[4];
         if (id.split(".")[3] !== "remote") {
           return;
