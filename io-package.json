@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "withings",
-    "version": "0.0.15",
+    "version": "0.0.16",
     "news": {
+      "0.0.16": {
+        "en": "add night events",
+        "de": "night events hinzugefügt",
+        "ru": "добавить ночные события",
+        "pt": "adicionar eventos noturnos",
+        "nl": "nachtelijke gebeurtenissen toevoegen",
+        "fr": "ajouter des événements de nuit",
+        "it": "aggiungi eventi notturni",
+        "es": "añadir eventos nocturnos",
+        "pl": "dodaj zdarzenia nocne",
+        "uk": "додати нічні події",
+        "zh-cn": "添加夜间事件"
+      },
       "0.0.15": {
         "en": "Update dependencies",
         "de": "Abhängigkeiten aktualisiert"
@@ -25,22 +38,6 @@
       "0.0.6": {
         "en": "Improve date handling",
         "de": "Datumsverarbeitung verbessert"
-      },
-      "0.0.4": {
-        "en": "Add additional fields for activity",
-        "de": "Zusätzliche Felder für Activity hinzugefügt"
-      },
-      "0.0.3": {
-        "en": "initial release",
-        "de": "Erstveröffentlichung",
-        "ru": "Начальная версия",
-        "pt": "lançamento inicial",
-        "nl": "Eerste uitgave",
-        "fr": "Première version",
-        "it": "Versione iniziale",
-        "es": "Versión inicial",
-        "pl": "Pierwsze wydanie",
-        "zh-cn": "首次出版"
       }
     },
     "title": "Withings",
