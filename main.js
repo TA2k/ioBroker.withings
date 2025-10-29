@@ -459,6 +459,22 @@ class Withings extends utils.Adapter {
               return;
             }
             const data = res.data.body;
+            if (Array.isArray(data?.measuregrps)) {
+              data.measuregrps.sort((a, b) => {
+                const numeric = (obj, key) => {
+                  const value = obj && obj[key];
+                  return typeof value === "number" ? value : Number(value) || 0;
+                };
+                const compareChain = ["date", "created", "modified", "grpid"];
+                for (const field of compareChain) {
+                  const diff = numeric(b, field) - numeric(a, field);
+                  if (diff !== 0) {
+                    return diff;
+                  }
+                }
+                return 0;
+              });
+            }
             if (data.activities) {
               data.activities.sort((a, b) => a.date.localeCompare(b.date));
             }
