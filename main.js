@@ -369,6 +369,213 @@ class Withings extends utils.Adapter {
     }
   }
 
+  /**
+   * Schreibe pro Measure-Type den letzten (neuesten) Messwert als State unter userid.lastMeasures.<type>
+   * measuregrps wird idealerweise sortiert übergeben (neueste zuerst), aber wir schützen uns trotzdem.
+   */
+async writeLastMeasures(userid, measuregrps, descriptions) {
+    if (!Array.isArray(measuregrps) || measuregrps.length === 0) return;
+
+    await this.setObjectNotExistsAsync(`${userid}.lastMeasures`, {
+        type: "channel",
+        common: { name: "Letzte Messwerte" },
+        native: {},
+    });
+
+    const seen = new Set();
+
+    for (const grp of measuregrps) {
+        if (!grp?.measures) continue;
+
+        //const tsRaw = Number(grp.date) || null; // Sekunden
+		const tsRaw = typeof grp.date === "number" ? grp.date * 1000 : null; // Millisekunden
+
+        for (const m of grp.measures) {
+            const t = m.type;
+            if (seen.has(t)) continue;
+
+            const val = m.value * Math.pow(10, m.unit);
+            const base = `${userid}.lastMeasures.${t}`;
+            const raw = `${userid}.lastMeasures.${t}_timestamp`;
+
+            // --- Wert ---
+            await this.setObjectNotExistsAsync(base, {
+                type: "state",
+                common: {
+                    name: descriptions?.[t] || `Measure ${t}`,
+                    type: "number",
+                    role: "value",
+                    read: true,
+                    write: false,
+                },
+                native: { type: t, unit: m.unit },
+            });
+            await this.setStateAsync(base, { val: val, ack: true });
+
+            // --- Raw Timestamp ---
+            await this.setObjectNotExistsAsync(raw, {
+                type: "state",
+                common: {
+                    name: `Timestamp Measure ${t}`,
+                    type: "number",
+                    role: "date", // <-- hier geändert
+                    read: true,
+                    write: false,
+                },
+                native: {},
+            });
+            await this.setStateAsync(raw, { val: tsRaw, ack: true });
+
+            seen.add(t);
+        }
+    }
+}
+  /**
+   * Schreibe die letzte Aktivität als States unter userid.lastActivity.<key>
+   * data ist die body-Antwort mit data.activities (Array)
+   */
+	async writeLastActivity(userid, data) {
+		try {
+			if (!data || !Array.isArray(data.activities) || data.activities.length === 0) return;
+
+			// Neueste Aktivität
+			const activity = data.activities[0];
+			if (!activity) return;
+
+			await this.setObjectNotExistsAsync(`${userid}.lastActivity`, {
+				type: "channel",
+				common: { name: "Letzte Aktivität" },
+				native: {},
+			});
+
+			// Felder, die eindeutig Zeitstempel darstellen
+			const isDateField = (key) =>
+				/(date|startdate|enddate|timestamp|modified|created)$/i.test(key);
+
+			for (const key of Object.keys(activity)) {
+				const rawValue = activity[key];
+				const stateId = `${userid}.lastActivity.${key}`;
+				
+				const determineType = (value) => {
+					if (typeof value === "number") return "number";
+					if (typeof value === "boolean") return "boolean";
+					return "string"; // fallback für alles andere
+				};
+
+				const common = {
+					name: `Letzte Aktivität - ${key}`,
+					type: determineType(rawValue),
+					role: isDateField(key) ? "date" : "value",
+					read: true,
+					write: false,
+				};
+
+				await this.setObjectNotExistsAsync(stateId, {
+					type: "state",
+					common,
+					native: {},
+				});
+
+				const outValue =
+					typeof rawValue === "object" ? JSON.stringify(rawValue) : rawValue;
+
+				await this.setStateAsync(stateId, { val: outValue, ack: true });
+			}
+
+		} catch (e) {
+			this.log.error("writeLastActivity failed: " + e);
+		}
+	}
+  /**
+   * Schreibe die letzte Sleep Summary als States unter userid.lastSleep.<key>
+   * data ist die body-Antwort, erwartet data.series (Array)
+   * Konvertiert: created, startdate, enddate, modified -> ISO
+   */
+async writeLastSleepSummary(userid, data) {
+    try {
+        if (!data || !Array.isArray(data.series) || data.series.length === 0) return;
+
+        const series = data.series[0] || data.series[data.series.length - 1];
+        if (!series) return;
+
+        await this.setObjectNotExistsAsync(`${userid}.lastSleep`, {
+            type: "channel",
+            common: { name: "Letzte Sleep Summary" },
+            native: {},
+        });
+
+        const isDateField = (key) =>
+            /(date|startdate|enddate|modified|created)$/i.test(key);
+
+        // --- Obere Ebene ---
+        for (const key of Object.keys(series)) {
+            if (key === "data") continue;
+
+            const rawValue = series[key];
+            const stateId = `${userid}.lastSleep.${key}`;
+
+			const determineType = (value) => {
+				if (typeof value === "number") return "number";
+				if (typeof value === "boolean") return "boolean";
+				return "string"; // fallback für alles andere
+			};
+
+            const common = {
+                name: `Letzte Sleep - ${key}`,
+                type: determineType(rawValue),
+                role: isDateField(key) ? "date" : "value",
+                read: true,
+                write: false,
+            };
+
+            await this.setObjectNotExistsAsync(stateId, {
+                type: "state",
+                common,
+                native: {},
+            });
+
+            const outValue =
+                typeof rawValue === "object" ? JSON.stringify(rawValue) : rawValue;
+
+            await this.setStateAsync(stateId, { val: outValue, ack: true });
+        }
+
+        // --- data-Objekt ---
+        if (series.data && typeof series.data === "object") {
+            for (const key of Object.keys(series.data)) {
+                const rawValue = series.data[key];
+                const stateId = `${userid}.lastSleep.${key}`;
+
+				const determineType = (value) => {
+					if (typeof value === "number") return "number";
+					if (typeof value === "boolean") return "boolean";
+					return "string"; // fallback für alles andere
+				};
+
+                const common = {
+                    name: `Letzte Sleep - ${key}`,
+                    type: determineType(rawValue),
+                    role: isDateField(key) ? "date" : "value",
+                    read: true,
+                    write: false,
+                };
+
+                await this.setObjectNotExistsAsync(stateId, {
+                    type: "state",
+                    common,
+                    native: {},
+                });
+
+                const outValue =
+                    typeof rawValue === "object" ? JSON.stringify(rawValue) : rawValue;
+
+                await this.setStateAsync(stateId, { val: outValue, ack: true });
+            }
+        }
+    } catch (e) {
+        this.log.error("writeLastSleepSummary failed: " + e);
+    }
+}
   async updateDevices() {
     for (const session of this.session) {
       const userid = session.userid;
@@ -453,7 +660,7 @@ class Withings extends utils.Adapter {
           headers: headers,
           data: qs.stringify(element.data),
         })
-          .then((res) => {
+          .then(async (res) => {
             this.log.debug(JSON.stringify(res.data));
             if (!res.data) {
               return;
@@ -476,7 +683,8 @@ class Withings extends utils.Adapter {
               });
             }
             if (data.activities) {
-              data.activities.sort((a, b) => a.date.localeCompare(b.date));
+              // sort activities by modified timestamp (newest first)
+              data.activities.sort((a, b) => (b.modified || 0) - (a.modified || 0));
             }
             if (element.path === "sleepSummary" || element.path === "sleep") {
               if (data.series && data.series.sort) {
@@ -525,6 +733,33 @@ class Withings extends utils.Adapter {
               139: "Atrial fibrillation result from PPG",
               170: "Visceral Fat (without unity)",
             };
+  
+            // === NEU: Schreibe die letzten Messwerte pro Type in userid.lastMeasures.<type>
+            if (element.path === "measures" && Array.isArray(data?.measuregrps)) {
+              try {
+                await this.writeLastMeasures(userid, data.measuregrps, descriptions);
+              } catch (e) {
+                this.log.error("writeLastMeasures failed: " + e);
+              }
+            }
+            // === NEU: Schreibe die letzte Activity in userid.lastActivity.<key>
+            if (element.path === "activity" && data) {
+              try {
+                await this.writeLastActivity(userid, data);
+              } catch (e) {
+                this.log.error("writeLastActivity failed: " + e);
+              }
+            }
+            // === NEU: Schreibe die letzte Sleep Summary in userid.lastSleep.<key>
+            if (element.path === "sleepSummary" && data) {
+              try {
+                await this.writeLastSleepSummary(userid, data);
+              } catch (e) {
+                this.log.error("writeLastSleepSummary failed: " + e);
+              }
+            }
+            // === ENDE NEU
+
             this.json2iob.parse(userid + "." + element.path, data, {
               forceIndex: element.forceIndex,
               preferedArrayName: element.preferedArrayName,
