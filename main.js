@@ -388,7 +388,7 @@ async writeLastMeasures(userid, measuregrps, descriptions) {
         if (!grp?.measures) continue;
 
         //const tsRaw = Number(grp.date) || null; // Sekunden
-		const tsRaw = typeof grp.date === "number" ? grp.date * 1000 : null; // Millisekunden
+    const tsRaw = typeof grp.date === "number" ? grp.date * 1000 : null; // Millisekunden
 
         for (const m of grp.measures) {
             const t = m.type;
@@ -434,58 +434,58 @@ async writeLastMeasures(userid, measuregrps, descriptions) {
    * Schreibe die letzte Aktivität als States unter userid.lastActivity.<key>
    * data ist die body-Antwort mit data.activities (Array)
    */
-	async writeLastActivity(userid, data) {
-		try {
-			if (!data || !Array.isArray(data.activities) || data.activities.length === 0) return;
+  async writeLastActivity(userid, data) {
+    try {
+      if (!data || !Array.isArray(data.activities) || data.activities.length === 0) return;
 
-			// Neueste Aktivität
-			const activity = data.activities[0];
-			if (!activity) return;
+      // Neueste Aktivität
+      const activity = data.activities[0];
+      if (!activity) return;
 
-			await this.setObjectNotExistsAsync(`${userid}.lastActivity`, {
-				type: "channel",
-				common: { name: "Letzte Aktivität" },
-				native: {},
-			});
+      await this.setObjectNotExistsAsync(`${userid}.lastActivity`, {
+        type: "channel",
+        common: { name: "Letzte Aktivität" },
+        native: {},
+      });
 
-			// Felder, die eindeutig Zeitstempel darstellen
-			const isDateField = (key) =>
-				/(date|startdate|enddate|timestamp|modified|created)$/i.test(key);
+      // Felder, die eindeutig Zeitstempel darstellen
+      const isDateField = (key) =>
+        /(date|startdate|enddate|timestamp|modified|created)$/i.test(key);
 
-			for (const key of Object.keys(activity)) {
-				const rawValue = activity[key];
-				const stateId = `${userid}.lastActivity.${key}`;
-				
-				const determineType = (value) => {
-					if (typeof value === "number") return "number";
-					if (typeof value === "boolean") return "boolean";
-					return "string"; // fallback für alles andere
-				};
+      for (const key of Object.keys(activity)) {
+        const rawValue = activity[key];
+        const stateId = `${userid}.lastActivity.${key}`;
 
-				const common = {
-					name: `Letzte Aktivität - ${key}`,
-					type: determineType(rawValue),
-					role: isDateField(key) ? "date" : "value",
-					read: true,
-					write: false,
-				};
+        const determineType = (value) => {
+          if (typeof value === "number") return "number";
+          if (typeof value === "boolean") return "boolean";
+          return "string"; // fallback für alles andere
+        };
 
-				await this.setObjectNotExistsAsync(stateId, {
-					type: "state",
-					common,
-					native: {},
-				});
+        const common = {
+          name: `Letzte Aktivität - ${key}`,
+          type: determineType(rawValue),
+          role: isDateField(key) ? "date" : "value",
+          read: true,
+          write: false,
+        };
 
-				const outValue =
-					typeof rawValue === "object" ? JSON.stringify(rawValue) : rawValue;
+        await this.setObjectNotExistsAsync(stateId, {
+          type: "state",
+          common,
+          native: {},
+        });
 
-				await this.setStateAsync(stateId, { val: outValue, ack: true });
-			}
+        const outValue =
+          typeof rawValue === "object" ? JSON.stringify(rawValue) : rawValue;
 
-		} catch (e) {
-			this.log.error("writeLastActivity failed: " + e);
-		}
-	}
+        await this.setStateAsync(stateId, { val: outValue, ack: true });
+      }
+
+    } catch (e) {
+      this.log.error("writeLastActivity failed: " + e);
+    }
+  }
   /**
    * Schreibe die letzte Sleep Summary als States unter userid.lastSleep.<key>
    * data ist die body-Antwort, erwartet data.series (Array)
@@ -514,11 +514,11 @@ async writeLastSleepSummary(userid, data) {
             const rawValue = series[key];
             const stateId = `${userid}.lastSleep.${key}`;
 
-			const determineType = (value) => {
-				if (typeof value === "number") return "number";
-				if (typeof value === "boolean") return "boolean";
-				return "string"; // fallback für alles andere
-			};
+      const determineType = (value) => {
+        if (typeof value === "number") return "number";
+        if (typeof value === "boolean") return "boolean";
+        return "string"; // fallback für alles andere
+      };
 
             const common = {
                 name: `Letzte Sleep - ${key}`,
@@ -546,11 +546,11 @@ async writeLastSleepSummary(userid, data) {
                 const rawValue = series.data[key];
                 const stateId = `${userid}.lastSleep.${key}`;
 
-				const determineType = (value) => {
-					if (typeof value === "number") return "number";
-					if (typeof value === "boolean") return "boolean";
-					return "string"; // fallback für alles andere
-				};
+        const determineType = (value) => {
+          if (typeof value === "number") return "number";
+          if (typeof value === "boolean") return "boolean";
+          return "string"; // fallback für alles andere
+        };
 
                 const common = {
                     name: `Letzte Sleep - ${key}`,
@@ -591,8 +591,7 @@ async writeLastSleepSummary(userid, data) {
           desc: "Measurements",
           data: {
             action: "getmeas",
-            meastypes: "1,4,5,6,8,9,10,11,12,54,71,73,76,77,88,91,123,135,136,137,138,139,170",
-
+            meastypes: "1,4,5,6,8,9,10,11,12,54,71,73,76,77,88,91,123,130,135,136,137,138,139,155,167,168,169,170,173,174,175,196,226,227,229,7,13,15,18,19,20,22,35,36,37,38,39,40,41,42,43,44,46,47,48,49,50,51,52,53,56,57,58,60,61,62,66,72,77,87,89,93,94,95,96,97,98,99,100,101,121,122,124,125,127,131,145,153,154,158,159,175,196,197,198",
             startdate: Math.round(Date.now() / 1000) - limitSeconds,
             enddate: Math.round(Date.now() / 1000),
           },
@@ -726,14 +725,83 @@ async writeLastSleepSummary(userid, data) {
               88: "Bone Mass (kg)",
               91: "Pulse Wave Velocity (m/s)",
               123: "VO2 max is a numerical measurement of your body’s ability to consume oxygen (ml/min/kg).",
+              130: "Atrial fibrillation result",
               135: "QRS interval duration based on ECG signal",
               136: "PR interval duration based on ECG signal",
               137: "QT interval duration based on ECG signal",
               138: "Corrected QT interval duration based on ECG signal",
               139: "Atrial fibrillation result from PPG",
+              155: "Vascular age",
+              167: "Nerve Health Score Conductance 2 electrodes Feet",
+              168: "Extracellular Water in kg",
+              169: "Intracellular Water in kg",
               170: "Visceral Fat (without unity)",
+              173: "Fat Free Mass for segments",
+              174: "Fat Mass for segments in mass unit",
+              175: "Muscle Mass for segments",
+              196: "Electrodermal activity feet",
+              226: "Basal Metabolic Rate (BMR)",
+              227: "Metabolic Age",
+              229: "Electrochemical Skin Conductance (ESC)",
+              7: "Lean Mass (%)",
+              13: "Humidity (%)",
+              15: "Noise (dB)",
+              18: "Weight Objective Speed",
+              19: "Breastfeeding (s)",
+              20: "Bottle (ml)",
+              22: "BMI",
+              35: "CO2: (ppm)",
+              36: "Steps",
+              37: "Elevation (m)",
+              38: "Calories (kcal)",
+              39: "Intensity",
+              40: "Distance (m)",
+              41: "Descent (m)",
+              42: "Activity Type",
+              43: "Duration (s)",
+              44: "Sleep State",
+              46: "User Event",
+              47: "Meal Calories (kcal)",
+              48: "Active Calories (kcal)",
+              49: "Idle Calories (kcal)",
+              50: "Inactive Duration (s)",
+              51: "Light Activity (s)",
+              52: "Moderate Activity (s)",
+              53: "Intense Activity (s)",
+              56: "Ambient light (lux)",
+              57: "Respiratory rate",
+              58: "Air Quality (ppm)",
+              60: "PIM movement",
+              61: "Maximum movement",
+              62: "pNN50",
+              66: "Pressure",
+              72: "GPS Speed",
+              87: "Active Calories (kcal)",
+              89: "SpO2: Quality",
+              93: "Muscle Mass (%)",
+              94: "Bone Mass (%)",
+              95: "Hydration (%)",
+              96: "Horizontal Radius",
+              97: "Altitude",
+              98: "Latitude",
+              99: "Longitude",
+              100: "Direction",
+              101: "Vertical Radius",
+              121: "Snoring",
+              122: "Lean Mass (%)",
+              124: "Training Duration",
+              125: "Training Load",
+              127: "Activity Class",
+              131: "Heart Sounds",
+              145: "afibECG",
+              153: "SDNN",
+              154: "RMSSD",
+              158: "Nerve Health Score Conductance Left",
+              159: "Nerve Health Score Conductance Right",
+              197: "Electrodermal Activity Left",
+              198: "Electrodermal Activity Right",
             };
-  
+
             // === NEU: Schreibe die letzten Messwerte pro Type in userid.lastMeasures.<type>
             if (element.path === "measures" && Array.isArray(data?.measuregrps)) {
               try {
