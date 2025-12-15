@@ -69,7 +69,6 @@
     "keywords": ["withings"],
     "license": "MIT",
     "platform": "Javascript/Node.js",
-    "main": "main.js",
     "icon": "withings.png",
     "enabled": true,
     "extIcon": "https://raw.githubusercontent.com/TA2k/ioBroker.withings/master/admin/withings.png",
