@@ -75,6 +75,7 @@
     "extIcon": "https://raw.githubusercontent.com/TA2k/ioBroker.withings/master/admin/withings.png",
     "readme": "https://github.com/TA2k/ioBroker.withings/blob/master/README.md",
     "loglevel": "info",
+    "tier": 2,
     "mode": "daemon",
     "type": "health",
     "compact": true,
